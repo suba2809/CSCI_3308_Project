@@ -1,0 +1,2 @@
+Just adding this here so when I commit it, this folder shows in the Git Repo, we should add some 
+folders for images and other resources here

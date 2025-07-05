@@ -1,0 +1,17 @@
+{
+  "name": "projectsourcecode",
+  "version": "1.0.0",
+  "description": "Basic user registration app",
+  "main": "index.js",
+  "scripts": {
+    "testandrun": "node index.js"
+  },
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "bcrypt": "^5.1.0",
+    "express": "^4.18.2",
+    "express-handlebars": "^7.0.7",
+    "pg": "^8.10.0"
+  }
+}

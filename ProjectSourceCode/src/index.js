@@ -3,13 +3,20 @@ const exphbs = require('express-handlebars');
 const path = require('path');
 const { Pool } = require('pg');
 const bcrypt = require('bcrypt');
+const session = require('express-session');
 
 const app = express();
 
-// Middleware to parse form data
+// --- MIDDLEWARE ---
 app.use(express.urlencoded({ extended: true }));
 
-// Set up Handlebars view engine
+app.use(session({
+  secret: 'superSecretKey', // For production, use process.env.SECRET or move to .env
+  resave: false,
+  saveUninitialized: false,
+}));
+
+// --- VIEW ENGINE SETUP ---
 app.engine('hbs', exphbs.engine({
   extname: '.hbs',
   defaultLayout: 'main',
@@ -19,10 +26,10 @@ app.engine('hbs', exphbs.engine({
 app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'views'));
 
-// Serve static files (optional)
+// --- STATIC FILES ---
 app.use(express.static(path.join(__dirname, 'resources')));
 
-// PostgreSQL connection pool (using .env variables)
+// --- DATABASE ---
 const pool = new Pool({
   host: process.env.DB_HOST || 'db',
   port: process.env.DB_PORT || 5432,
@@ -31,9 +38,9 @@ const pool = new Pool({
   database: process.env.POSTGRES_DB || 'mydatabase',
 });
 
-// ROUTES
+// --- ROUTES ---
 
-// Redirect root to registration
+// Redirect to registration page
 app.get('/', (req, res) => {
   res.redirect('/register');
 });
@@ -43,7 +50,7 @@ app.get('/register', (req, res) => {
   res.render('pages/register');
 });
 
-// Handle form submission
+// Handle registration
 app.post('/register', async (req, res) => {
   const { first_name, last_name, email, username, password } = req.body;
 
@@ -52,7 +59,6 @@ app.post('/register', async (req, res) => {
   }
 
   try {
-    // Check if email or username already exists
     const existing = await pool.query(
       'SELECT * FROM users WHERE email = $1 OR username = $2',
       [email, username]
@@ -64,28 +70,81 @@ app.post('/register', async (req, res) => {
       });
     }
 
-    // Hash password before storing
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Insert user into DB
     await pool.query(
       `INSERT INTO users (first_name, last_name, email, username, password)
        VALUES ($1, $2, $3, $4, $5)`,
       [first_name, last_name, email, username, hashedPassword]
     );
 
-    return res.render('pages/register', {
+    res.render('pages/register', {
       success: 'Registration successful! You can now log in.',
     });
   } catch (err) {
     console.error('Registration error:', err);
-    return res.render('pages/register', {
+    res.render('pages/register', {
       error: 'Something went wrong. Please try again.',
     });
   }
 });
 
-// Start the server
+// Show login form
+app.get('/login', (req, res) => {
+  res.render('pages/login');
+});
+
+// Handle login
+app.post('/login', async (req, res) => {
+  const { username, password } = req.body;
+
+  try {
+    const result = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
+    if (result.rows.length === 0) {
+      return res.render('pages/login', { error: 'Invalid username or password.' });
+    }
+
+    const user = result.rows[0];
+    const match = await bcrypt.compare(password, user.password);
+
+    if (!match) {
+      return res.render('pages/login', { error: 'Invalid username or password.' });
+    }
+
+    req.session.user = {
+      id: user.user_id,
+      username: user.username,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      email: user.email,
+      bio: user.bio,
+      profile_photo: user.profile_photo,
+      created_at: user.created_at,
+    };
+
+    res.redirect('/profile');
+  } catch (err) {
+    console.error('Login error:', err);
+    res.render('pages/login', { error: 'An error occurred. Please try again.' });
+  }
+});
+
+// Show user profile (protected route)
+app.get('/profile', (req, res) => {
+  if (!req.session.user) {
+    return res.redirect('/login');
+  }
+  res.render('pages/profile', { user: req.session.user });
+});
+
+// Logout
+app.get('/logout', (req, res) => {
+  req.session.destroy(() => {
+    res.redirect('/login');
+  });
+});
+
+// --- START SERVER ---
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`✅ Server running at http://localhost:${PORT}`);

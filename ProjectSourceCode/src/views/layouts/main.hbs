@@ -1,10 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Register</title>
+  <meta charset="UTF-8" />
+  <title>{{title}}</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fffaf5;
+      margin: 0;
+      padding: 0;
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      padding: 1rem;
+      background-color: #fff0dc;
+      border-bottom: 1px solid #ccc;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #333;
+      font-weight: bold;
+    }
+
+    nav a:hover {
+      text-decoration: underline;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 1rem;
+    }
+  </style>
 </head>
 <body>
-  {{{body}}}
+  {{> nav}}
+  <div class="container">
+    {{{body}}}
+  </div>
 </body>
 </html>

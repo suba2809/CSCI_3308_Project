@@ -11,7 +11,7 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 
 app.use(session({
-  secret: 'superSecretKey', // For production, use process.env.SECRET or move to .env
+  secret: 'superSecretKey', // Use process.env.SECRET in production
   resave: false,
   saveUninitialized: false,
 }));
@@ -40,22 +40,48 @@ const pool = new Pool({
 
 // --- ROUTES ---
 
-// Redirect to registration page
-app.get('/', (req, res) => {
-  res.redirect('/register');
+// HOME PAGE
+app.get("/", (req, res) => {
+  const articles = [
+    {
+      title: "AI Takes Over Newsrooms",
+      summary: "Jeffrey Epstein Files have been realesed. (The real joke is this will never happen)",
+      author: "Jane Smith",
+      date: "July 9, 2025"
+    },
+    {
+      title: "Tech Stocks Hit New Highs",
+      summary: "NASDAQ sees record growth as investors remain bullish on innovation.",
+      author: "Carlos Vega",
+      date: "July 8, 2025"
+    },
+    {
+      title: "NASA Plans Moon Hotel",
+      summary: "A private space company and NASA team up to build a lunar resort by 2030.",
+      author: "Luna Patel",
+      date: "July 7, 2025"
+    }
+  ];
+
+  res.render("pages/home", {
+    title: "Home",
+    user: req.session.user,
+    articles
+  });
 });
 
-// Show registration form
-app.get('/register', (req, res) => {
-  res.render('pages/register');
+
+// SHOW REGISTRATION FORM
+app.get("/register", (req, res) => {
+  res.render("pages/register", { title: "Register" });
 });
 
-// Handle registration
+// HANDLE REGISTRATION
 app.post('/register', async (req, res) => {
   const { first_name, last_name, email, username, password } = req.body;
 
   if (!first_name || !last_name || !email || !username || !password) {
-    return res.render('pages/register', { error: 'All fields are required.' });
+    return res.render('pages/register', { title: "Register", error: 'All fields are required.' });
   }
 
   try {
@@ -66,6 +92,7 @@ app.post('/register', async (req, res) => {
 
     if (existing.rows.length > 0) {
       return res.render('pages/register', {
+        title: "Register",
         error: 'Email or username already exists.',
       });
     }
@@ -78,37 +105,36 @@ app.post('/register', async (req, res) => {
       [first_name, last_name, email, username, hashedPassword]
     );
 
-    res.render('pages/register', {
-      success: 'Registration successful! You can now log in.',
-    });
+    res.redirect("/login");
   } catch (err) {
     console.error('Registration error:', err);
     res.render('pages/register', {
+      title: "Register",
       error: 'Something went wrong. Please try again.',
     });
   }
 });
 
-// Show login form
+// SHOW LOGIN FORM
 app.get('/login', (req, res) => {
-  res.render('pages/login');
+  res.render("pages/login", { title: "Login" });
 });
 
-// Handle login
+// HANDLE LOGIN
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
 
   try {
     const result = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
     if (result.rows.length === 0) {
-      return res.render('pages/login', { error: 'Invalid username or password.' });
+      return res.render('pages/login', { title: "Login", error: 'Invalid username or password.' });
     }
 
     const user = result.rows[0];
     const match = await bcrypt.compare(password, user.password);
 
     if (!match) {
-      return res.render('pages/login', { error: 'Invalid username or password.' });
+      return res.render('pages/login', { title: "Login", error: 'Invalid username or password.' });
     }
 
     req.session.user = {
@@ -125,19 +151,19 @@ app.post('/login', async (req, res) => {
     res.redirect('/profile');
   } catch (err) {
     console.error('Login error:', err);
-    res.render('pages/login', { error: 'An error occurred. Please try again.' });
+    res.render('pages/login', { title: "Login", error: 'An error occurred. Please try again.' });
   }
 });
 
-// Show user profile (protected route)
+// PROFILE PAGE (PROTECTED)
 app.get('/profile', (req, res) => {
   if (!req.session.user) {
     return res.redirect('/login');
   }
-  res.render('pages/profile', { user: req.session.user });
+  res.render('pages/profile', { title: "Profile", user: req.session.user });
 });
 
-// Logout
+// LOGOUT
 app.get('/logout', (req, res) => {
   req.session.destroy(() => {
     res.redirect('/login');

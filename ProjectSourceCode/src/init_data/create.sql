@@ -16,3 +16,17 @@ CREATE TABLE IF NOT EXISTS users (
     bio           TEXT,
     created_at    TIMESTAMP DEFAULT NOW()
 );
+
+CREATE TABLE IF NOT EXISTS articles (
+    article_id SERIAL PRIMARY KEY,
+    title VARCHAR(264) NOT NULL,
+    summary TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
+)
+
+CREATE TABLE IF NOT EXISTS articles_to_users (
+    user_id INT NOT NULL,
+    article_id INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE,
+    FOREIGN KEY (article_id) REFERENCES articles (article_id) ON DELETE CASCADE
+);

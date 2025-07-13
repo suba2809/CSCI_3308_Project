@@ -1,1 +1,41 @@
-{{!comment so the hbs file sticks}}
+<header>
+ <nav class="navbar navbar-expand-sm border-bottom">
+   <div class="container">
+     <button
+       class="navbar-toggler ms-auto"
+       type="button"
+       data-bs-toggle="collapse"
+       data-bs-target="#navbar-collapse"
+       aria-controls="navbar"
+       aria-expanded="false"
+       aria-label="Toggle navigation">
+       <span class="navbar-toggler-icon"></span>
+     </button>
+     <div class="collapse navbar-collapse" id="navbar-collapse">
+       <ul class="navbar-nav me-auto">
+         <li class="nav-item">
+            {{#if username}}
+            <a class="nav-link" href="/home">TinyNews</a>
+            {{else}}
+            <a class="nav-link" href="/login">TinyNews</a>
+            {{/if}}  
+         </li>
+         <li class="nav-item">
+            {{#if username}}
+            <a class="nav-link" href="/profile">Profile</a>
+            {{else}}
+            <a class="nav-link" href="/login">Profile</a>
+            {{/if}}  
+         </li>
+       </ul>
+       <div class="nav-item me-1">
+        {{#if username}}
+        <a class="nav-link" href="/logout">Logout</a>
+        {{else}}
+        <a class="nav-link" href="/login">Login</a>
+        {{/if}}  
+       </div>
+     </div>
+   </div>
+ </nav>
+</header>

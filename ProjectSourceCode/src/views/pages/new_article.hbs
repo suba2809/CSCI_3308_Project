@@ -1,0 +1,21 @@
+<div style="max-width: 400px; margin: 50px auto; padding: 30px; background-color: #fdf2e9; border-radius: 10px; font-family: sans-serif;">
+  <h2 style="text-align: center; color: #6b3e26;">Add New Article</h2>
+
+  <form action="/articles/new" method="POST" style="display: flex; flex-direction: column; gap: 12px;">
+    <div>
+        <label for="title">Title</label><br>
+        <input type="text" id="title" name="title" required>
+    </div>
+    <div>
+        <label for="summary">Summary</label><br>
+        <textarea id="summary" name="summary" rows="8" cols="50" required></textarea>
+    </div>
+    <button type="submit" style="background-color: #8b5e3c; color: white; padding: 10px; border: none; border-radius: 5px;">
+      Post Article
+    </button>
+  </form>
+
+  {{#if error}}
+    <p style="color: red; text-align: center; margin-top: 10px;">{{error}}</p>
+  {{/if}}
+</div>

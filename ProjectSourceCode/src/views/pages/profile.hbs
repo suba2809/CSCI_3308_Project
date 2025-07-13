@@ -1,5 +1,8 @@
 <div style="max-width: 600px; margin: 50px auto; padding: 30px; background-color: #fdf2e9; border-radius: 10px; font-family: sans-serif;">
   <h2 style="color: #6b3e26;">Welcome, {{user.first_name}} {{user.last_name}}!</h2>
+  <div class="d-flex justify-content-end mt-3">
+    <a href="/articles/new" class="btn btn-primary">Add New Article</a>
+  </div>
   <p><strong>Username:</strong> {{user.username}}</p>
   <p><strong>Email:</strong> {{user.email}}</p>
   <p><strong>Bio:</strong> {{user.bio}}</p>

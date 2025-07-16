@@ -26,11 +26,7 @@ services:
       - '3000:3000'
     volumes:
       - ./:/repository
-<<<<<<< HEAD
-    command: sh -c "npm install && npm run testandrun"
-=======
     command: sh -c "npm install && npm run testandrun"  # <-- this line installs modules before running
->>>>>>> a5f8c728da4b677280414048606277401c279cd6
 
 volumes:
   group-project:

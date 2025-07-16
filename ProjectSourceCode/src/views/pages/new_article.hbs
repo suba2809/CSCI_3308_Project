@@ -1,14 +1,14 @@
 <div style="max-width: 400px; margin: 50px auto; padding: 30px; background-color: #fdf2e9; border-radius: 10px; font-family: sans-serif;">
   <h2 style="text-align: center; color: #6b3e26;">Add New Article</h2>
 
-  <form action="/articles/new" method="POST" style="display: flex; flex-direction: column; gap: 12px;">
+  <form action="/new_article" method="POST" style="display: flex; flex-direction: column; gap: 12px;">
     <div>
         <label for="title">Title</label><br>
-        <input type="text" id="title" name="title" required>
+        <input type="text" id="title" name="title" required style="width: 100%;">
     </div>
     <div>
         <label for="summary">Summary</label><br>
-        <textarea id="summary" name="summary" rows="8" cols="50" required></textarea>
+        <textarea id="summary" name="summary" rows="8" style="width: 100%;" required></textarea>
     </div>
     <button type="submit" style="background-color: #8b5e3c; color: white; padding: 10px; border: none; border-radius: 5px;">
       Post Article

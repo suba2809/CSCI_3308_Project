@@ -1,10 +1,22 @@
 <div style="max-width: 600px; margin: 50px auto; padding: 30px; background-color: #fdf2e9; border-radius: 10px; font-family: sans-serif;">
   <h2 style="color: #6b3e26;">Welcome, {{user.first_name}} {{user.last_name}}!</h2>
-  <div class="d-flex justify-content-end mt-3">
-    <a href="/articles/new" class="btn btn-primary">Add New Article</a>
+  <div style="display: flex; justify-content: flex-end; margin-top: 1rem;">
+    <a href="/new_article" 
+       style="
+         background-color: #8b5e3c;
+         color: white;
+         padding: 0.5rem 1rem;
+         border-radius: 4px;
+         text-decoration: none;
+         font-weight: bold;
+         font-family: sans-serif;
+         display: inline-block;
+       ">
+      Add New Article
+    </a>
   </div>
   <p><strong>Username:</strong> {{user.username}}</p>
   <p><strong>Email:</strong> {{user.email}}</p>
-  <p><strong>Bio:</strong> {{user.bio}}</p>
+  <p><strong>Bio:</strong> {{#if bio}} {{user.bio}} {{else}} N/A {{/if}}</p>
   <p><strong>Joined:</strong> {{user.created_at}}</p>
 </div>

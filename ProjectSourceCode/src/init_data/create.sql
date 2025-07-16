@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS articles (
     title VARCHAR(264) NOT NULL,
     summary TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT NOW()
-)
+);
 
 CREATE TABLE IF NOT EXISTS articles_to_users (
     user_id INT NOT NULL,

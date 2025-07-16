@@ -41,66 +41,49 @@ const pool = new Pool({
 // --- ROUTES ---
 
 // HOME PAGE
-app.get("/", async (req, res) => {
-  const articles = [
-    {
-      title: "AI Takes Over Newsrooms",
-      summary: "Jeffrey Epstein Files have been realesed. (The real joke is this will never happen)",
-      author: "Jane Smith",
-      date: "July 9, 2025"
-    },
-    {
-      title: "Tech Stocks Hit New Highs",
-      summary: "NASDAQ sees record growth as investors remain bullish on innovation.",
-      author: "Carlos Vega",
-      date: "July 8, 2025"
-    },
-    {
-      title: "NASA Plans Moon Hotel",
-      summary: "A private space company and NASA team up to build a lunar resort by 2030.",
-      author: "Luna Patel",
-      date: "July 7, 2025"
-    }
-  ];
-
+app.get("/home", async (req, res) => {
   try {
-      const results = await pool.query(`
-          SELECT
-            articles.article_id,
-            articles.title,
-            articles.summary,
-            articles.created_at,
-            users.username AS author_username
-          FROM articles
-          INNER JOIN articles_to_users
-            ON articles.article_id = articles_to_users.article_id
-          INNER JOIN users
-            ON articles_to_users.user_id = users.user_id
-          ORDER BY articles.created_at DESC
+    const results = await pool.query(`
+      SELECT
+        articles.article_id,
+        articles.title,
+        articles.summary,
+        articles.created_at,
+        users.username AS author_username
+      FROM articles
+      INNER JOIN articles_to_users
+        ON articles.article_id = articles_to_users.article_id
+      INNER JOIN users
+        ON articles_to_users.user_id = users.user_id
+      ORDER BY articles.created_at DESC
+    `);
 
-      `);
+    const articles = results.rows.map(row => ({
+      article_id: row.article_id,
+      title: row.title,
+      summary: row.summary,
+      date: row.created_at ? new Date(row.created_at).toLocaleDateString() : '',
+      author: row.author_username
+    }));
 
-      const articles = results.rows.map(row => ({
-        article_id: row.article_id,
-        title: row.title,
-        summary: row.summary,
-        date: row.created_at.toLocaleDateString(),
-        author: { username: row.author_username}
-      }));
-
-      res.render("pages/home", {
-        title: "Home",
-        user: req.session.user,
-        articles
-      });
-    }
-    catch(error) {
-          res.render('pages/home', {
-              articles: []
-          });
-    }
+    res.render("pages/home", {
+      title: "Home",
+      user: req.session.user,
+      articles
+    });
+  }
+  catch(error) {
+    console.error('Error fetching articles:', error);
+    res.render('pages/home', {
+      articles: []
+    });
+  }
 });
 
+
+app.get("/", (req, res) => {
+  res.redirect("/login");
+});
 
 // SHOW REGISTRATION FORM
 app.get("/register", (req, res) => {
@@ -195,14 +178,25 @@ app.get('/profile', (req, res) => {
 });
 
 // Adding New Article
-app.post('/articles/new', async (req, res) => {
+app.get('/new_article', (req, res) => {
+  res.render('pages/new_article');
+});
+
+app.post('/new_article', async (req, res) => {
   const { title, summary } = req.body;
   const user_id = req.session.user?.id;
+
+  console.log('New article submission:', { title, summary, user_id });
+
+  if (!user_id) {
+    return res.redirect('/login');
+  }
 
   try {
     const results = await pool.query(`
       INSERT INTO articles (title, summary)
       VALUES ($1, $2)
+      RETURNING article_id
       `, [title, summary]);
 
     const article_id = results.rows[0].article_id;
@@ -212,10 +206,10 @@ app.post('/articles/new', async (req, res) => {
       VALUES ($1, $2)
       `, [user_id, article_id]);
 
-    res.redirect('/');
+    res.redirect('/home');
   }
   catch (error) {
-    console.error('Error inserting article:', err);
+    console.error('Error inserting article:', error);
     res.status(500).send('Server Error');
   }
 });

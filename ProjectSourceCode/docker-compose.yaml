@@ -26,7 +26,8 @@ services:
       - '3000:3000'
     volumes:
       - ./:/repository
-    command: sh -c "npm install && npm run testandrun"  # <-- this line installs modules before running
+      - ./uploads:/repository/src/uploads  # <-- Mount uploads folder
+    command: sh -c "npm install && npm run testandrun"
 
 volumes:
   group-project:

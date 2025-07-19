@@ -1,5 +1,5 @@
-<div style="max-width: 500px; margin: 50px auto; padding: 30px; background-color: #fdf2e9; border-radius: 10px; font-family: sans-serif; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
-  <h2 style="text-align: center; color: #6b3e26;">Register</h2>
+<div style="max-width: 500px; margin: 50px auto; padding: 30px; background-color: white; border-radius: 10px; font-family: sans-serif; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+  <h2 style="text-align: center; color: #0f0f0f;">Register</h2>
 
   <form action="/register" method="POST" style="display: flex; flex-direction: column; gap: 12px;">
     <input type="text" name="first_name" placeholder="First Name" required>
@@ -8,10 +8,15 @@
     <input type="text" name="bio" placeholder="Bio">
     <input type="text" name="username" placeholder="Username" required>
     <input type="password" name="password" placeholder="Password" required>
-    <button type="submit" style="background-color: #8b5e3c; color: white; padding: 10px; border: none; border-radius: 5px;">
+    <button type="submit" style="background-color: #0f0f0f; color: white; padding: 10px; border: none; border-radius: 5px;">
       Register
     </button>
       <div class="login-footer" style="text-align: center;">Already have an account? <a href="/login">Login</a></div>
+<div class="text-center">
+  Already have an account?
+  <a href="/login" style="color: #0f0f0f;">Login</a>
+</div>
+
   </form>
 
   {{#if error}}

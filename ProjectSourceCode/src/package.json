@@ -4,7 +4,8 @@
   "description": "Basic user registration app",
   "main": "index.js",
   "scripts": {
-    "testandrun": "node index.js"
+    "testandrun": "node index.js",
+    "seed": "node src/init_data/seed.js"
   },
   "author": "Your Name",
   "license": "MIT",

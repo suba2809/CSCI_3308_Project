@@ -35,7 +35,13 @@ app.engine('hbs', exphbs.engine({
   defaultLayout: 'main',
   layoutsDir: path.join(__dirname, 'views/layouts'),
   partialsDir: path.join(__dirname, 'views/partials'),
+  helpers: {
+    ifCond: function (v1, v2, options) {
+      return (v1 === v2) ? options.fn(this) : options.inverse(this);
+    }
+  }
 }));
+
 app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'views'));
 
@@ -64,12 +70,10 @@ app.get("/home", async (req, res) => {
         articles.summary,
         articles.file_path,
         articles.created_at,
-        users.username AS author_username
+        users.username AS author
       FROM articles
-      INNER JOIN articles_to_users
-        ON articles.article_id = articles_to_users.article_id
-      INNER JOIN users
-        ON articles_to_users.user_id = users.user_id
+      JOIN articles_to_users ON articles.article_id = articles_to_users.article_id
+      JOIN users ON articles_to_users.user_id = users.user_id
       ORDER BY articles.created_at DESC
     `);
 
@@ -79,7 +83,7 @@ app.get("/home", async (req, res) => {
       summary: row.summary,
       file_path: row.file_path,
       date: row.created_at ? new Date(row.created_at).toLocaleDateString() : '',
-      author: row.author_username
+      author: row.author
     }));
 
     res.render("pages/home", {
@@ -95,6 +99,8 @@ app.get("/home", async (req, res) => {
     });
   }
 });
+
+
 
 app.get("/", (req, res) => {
   res.redirect("/login");
@@ -146,6 +152,7 @@ app.post('/register', async (req, res) => {
 
 // SHOW LOGIN FORM
 app.get('/login', (req, res) => {
+  if (req.session.user) return res.redirect('/home');
   res.render("pages/login", { title: "Login" });
 });
 
@@ -177,7 +184,7 @@ app.post('/login', async (req, res) => {
       created_at: user.created_at,
     };
 
-    res.redirect('/profile');
+    res.redirect('/home');
   } catch (err) {
     console.error('Login error:', err);
     res.render('pages/login', { title: "Login", error: 'An error occurred. Please try again.' });
@@ -222,19 +229,200 @@ app.post('/new_article', upload.single('article_file'), async (req, res) => {
       VALUES ($1, $2)
     `, [user_id, article_id]);
 
-    res.redirect('/home');
+    res.redirect(`/article/${article_id}`);
   } catch (error) {
     console.error('Error inserting article with file:', error);
     res.status(500).send('Server Error');
   }
 });
+// SHOW EDIT ARTICLE FORM
+app.get("/edit_article/:id", async (req, res) => {
+  const article_id = req.params.id;
+  const user_id = req.session.user?.id;
+
+  if (!user_id) return res.redirect("/login");
+
+  try {
+    const result = await pool.query(`
+      SELECT a.* FROM articles a
+      JOIN articles_to_users atu ON a.article_id = atu.article_id
+      WHERE a.article_id = $1 AND atu.user_id = $2
+    `, [article_id, user_id]);
+
+    if (result.rows.length === 0) return res.status(403).send("Unauthorized");
+
+    res.render("pages/edit_article", {
+      article: result.rows[0],
+      user: req.session.user
+    });
+  } catch (err) {
+    console.error("Error loading article for edit:", err);
+    res.status(500).send("Server error");
+  }
+});
+
+// HANDLE EDIT SUBMISSION
+app.post("/edit_article/:id", upload.single("article_file"), async (req, res) => {
+  const article_id = req.params.id;
+  const user_id = req.session.user?.id;
+  const { title, summary } = req.body;
+  const newFilePath = req.file ? req.file.path : null;
+
+  if (!user_id) return res.redirect("/login");
+
+
+  try {
+    const result = await pool.query(`
+      SELECT * FROM articles a
+      JOIN articles_to_users atu ON a.article_id = atu.article_id
+      WHERE a.article_id = $1 AND atu.user_id = $2
+    `, [article_id, user_id]);
+
+    if (result.rows.length === 0) return res.status(403).send("Unauthorized");
+
+    if (newFilePath) {
+    // 4 parameters
+      await pool.query(`
+        UPDATE articles SET title = $1, summary = $2, file_path = $3
+        WHERE article_id = $4
+      `, [title, summary, newFilePath, article_id]);
+    } else {
+    // 3 parameters
+      await pool.query(`
+        UPDATE articles SET title = $1, summary = $2
+        WHERE article_id = $3
+      `, [title, summary, article_id]);
+   }
+
+    res.redirect("/home");
+  } catch (err) {
+    console.error("Error updating article:", err);
+    res.status(500).send("Server error");
+}
+  
+});
 
 // LOGOUT
 app.get('/logout', (req, res) => {
   req.session.destroy(() => {
-    res.redirect('/login');
+    res.render("pages/login", {
+      title: "Login",
+      message: " You have been successfully logged out."
+    });
   });
 });
+ 
+// ARTICLE PAGE ROUTE 
+app.get("/article/:id", async (req, res) => {
+  const article_id = req.params.id;
+  const user_id = req.session.user?.id;
+
+  try {
+    // Get the article and author
+    const articleResult = await pool.query(`
+      SELECT a.*, u.username AS author
+      FROM articles a
+      JOIN articles_to_users atu ON a.article_id = atu.article_id
+      JOIN users u ON atu.user_id = u.user_id
+      WHERE a.article_id = $1
+    `, [article_id]);
+
+    if (articleResult.rows.length === 0) {
+      return res.status(404).send("Article not found");
+    }
+
+    const article = articleResult.rows[0];
+
+    // Like count
+    const likeCountResult = await pool.query(`
+      SELECT COUNT(*) FROM likes WHERE article_id = $1
+    `, [article_id]);
+    article.likes = parseInt(likeCountResult.rows[0].count);
+
+    // Check if current user has liked
+    let userHasLiked = false;
+    if (user_id) {
+      const likedResult = await pool.query(
+        `SELECT 1 FROM likes WHERE article_id = $1 AND user_id = $2`,
+        [article_id, user_id]
+      );
+      userHasLiked = likedResult.rows.length > 0;
+    }
+
+    // Get comments
+    const commentsResult = await pool.query(`
+      SELECT c.content, u.username
+      FROM comments c
+      JOIN users u ON c.user_id = u.user_id
+      WHERE c.article_id = $1
+      ORDER BY c.created_at ASC
+    `, [article_id]);
+
+    res.render("pages/article", {
+      article,
+      comments: commentsResult.rows,
+      user: req.session.user,
+      userHasLiked
+    });
+  } catch (err) {
+    console.error("Error loading article:", err);
+    res.status(500).send("Internal server error");
+  }
+});
+
+
+// POST LIKES 
+app.post("/like/:id", async (req, res) => {
+  const article_id = req.params.id;
+  const user_id = req.session.user?.id;
+  if (!user_id) return res.redirect("/login");
+
+  try {
+    const existing = await pool.query(
+      `SELECT * FROM likes WHERE article_id = $1 AND user_id = $2`,
+      [article_id, user_id]
+    );
+
+    if (existing.rows.length === 0) {
+      await pool.query(
+        `INSERT INTO likes (article_id, user_id) VALUES ($1, $2)`,
+        [article_id, user_id]
+      );
+    } else {
+      await pool.query(
+        `DELETE FROM likes WHERE article_id = $1 AND user_id = $2`,
+        [article_id, user_id]
+      );
+    }
+
+    res.redirect(`/article/${article_id}`);
+  } catch (err) {
+    console.error("Like error:", err);
+    res.status(500).send("Server error");
+  }
+});
+
+// POST COMMENTS 
+app.post("/comment/:id", async (req, res) => {
+  const article_id = req.params.id;
+  const user_id = req.session.user?.id;
+  const { content } = req.body;
+  if (!user_id) return res.redirect("/login");
+
+  try {
+    await pool.query(
+      `INSERT INTO comments (article_id, user_id, content)
+       VALUES ($1, $2, $3)`,
+      [article_id, user_id, content]
+    );
+
+    res.redirect(`/article/${article_id}`);
+  } catch (err) {
+    console.error("Comment error:", err);
+    res.status(500).send("Server error");
+  }
+});
+
 
 // --- START SERVER ---
 const PORT = process.env.PORT || 3000;

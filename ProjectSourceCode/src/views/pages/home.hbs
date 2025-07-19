@@ -1,25 +1,23 @@
 <div style="max-width: 900px; margin: 2rem auto; padding: 1rem;">
-  <h1 style="text-align: center;">📰 Welcome to TinyNews</h1>
+  <h1 style="text-align: center;"> Tiny News</h1>
   <p style="text-align: center;">Your daily dose of tech, science, and innovation.</p>
 
   <hr />
 
-  {{#each articles}}
-    <div style="background: #fef3e7; border: 1px solid #ddd; padding: 1rem; margin: 1.5rem 0; border-radius: 8px;">
-      <h2 style="margin-bottom: 0.5rem;">{{this.title}}</h2>
-      <p><em>{{this.date}}</em> • by {{this.author}}</p>
-      <p>{{this.summary}}</p>
-      {{#if this.file_path}}
-        <p>
-          <a href="/{{this.file_path}}" target="_blank" style="color: #8b5e3c; text-decoration: none; font-weight: bold;">
-            📎 Download Article File
-          </a>
-        </p>
-      {{/if}}
-    </div>
-  {{/each}}
+{{#each articles}}
+  <div style="background: #e4e2e0; padding: 1rem; margin-bottom: 1.5rem; border-radius: 10px; box-shadow: 0 0 5px rgba(0,0,0,0.1);">
+    <h3><a href="/article/{{article_id}}" style="color: #0f0f0f; text-decoration: none;">{{title}}</a></h3>
+    <p><strong>By:</strong> {{author}} • {{date}}</p>
+    <p>{{summary}}</p>
+    {{#ifCond ../user.username author}}
+      <a href="/edit_article/{{article_id}}"> Edit</a>
+    {{/ifCond}}
+  </div>
+{{/each}}
+
 
   {{#unless articles.length}}
     <p>No articles found.</p>
   {{/unless}}
+  <h3><a href="/article/{{article_id}}" style="color: white;">{{title}}</a></h3>
 </div>

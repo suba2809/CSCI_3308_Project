@@ -1,29 +1,19 @@
-<header>
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
-      <ul class="navbar-nav mr-auto">
-         <li class="nav-item">
-            {{#if username}}
-            <a class="nav-link" href="/home">TinyNews</a>
-            {{else}}
-            <a class="nav-link" href="/login">TinyNews</a>
-            {{/if}}  
-          </li>
-          <li class="nav-item">
-            {{#if username}}
-            <a class="nav-link" href="/profile">Profile</a>
-            {{else}}
-            <a class="nav-link" href="/login">Profile</a>
-            {{/if}}  
-         </li>
-       </ul>
-       <div class="nav-item ms-1">
-        {{#if username}}
-        <a class="nav-link" href="/logout">Logout</a>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/home">TinyNews</a>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        {{#if user}}
+          <li class="nav-item"><a class="nav-link" href="/profile">Profile</a></li>
+          <li class="nav-item"><a class="nav-link" href="/new_article">New Article</a></li>
+          <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
         {{else}}
-        <a class="nav-link" href="/login">Login</a>
-        {{/if}}  
-       </div>
-   </div>
- </nav>
-</header>
+          <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
+          <li class="nav-item"><a class="nav-link" href="/register">Register</a></li>
+        {{/if}}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+

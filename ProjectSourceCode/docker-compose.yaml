@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   db:
@@ -15,7 +15,6 @@ services:
 
   web:
     image: node:lts
-    user: 'node'
     working_dir: /repository/src
     env_file: .env
     environment:
@@ -26,7 +25,7 @@ services:
       - '3000:3000'
     volumes:
       - ./:/repository
-      - ./uploads:/repository/src/uploads  # <-- Mount uploads folder
+      - ./uploads:/repository/src/uploads
     command: sh -c "npm install && npm run testandrun"
 
 volumes:

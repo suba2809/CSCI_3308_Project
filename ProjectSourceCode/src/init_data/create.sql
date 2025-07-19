@@ -39,3 +39,35 @@ CREATE TABLE IF NOT EXISTS articles_to_users (
     FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE,
     FOREIGN KEY (article_id) REFERENCES articles (article_id) ON DELETE CASCADE
 );
+-- Likes table
+CREATE TABLE likes (
+  like_id SERIAL PRIMARY KEY,
+  user_id INT REFERENCES users(user_id) ON DELETE CASCADE,
+  article_id INT REFERENCES articles(article_id) ON DELETE CASCADE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE (user_id, article_id) -- one like per user per article
+);
+
+-- Comments table
+CREATE TABLE comments (
+  comment_id SERIAL PRIMARY KEY,
+  user_id INT REFERENCES users(user_id) ON DELETE CASCADE,
+  article_id INT REFERENCES articles(article_id) ON DELETE CASCADE,
+  content TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+-- ERROR HANDLING FOR BOTH LIKES/COMMENTS 
+CREATE TABLE IF NOT EXISTS likes (
+  like_id SERIAL PRIMARY KEY,
+  article_id INT REFERENCES articles(article_id) ON DELETE CASCADE,
+  user_id INT REFERENCES users(user_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS comments (
+  comment_id SERIAL PRIMARY KEY,
+  article_id INT REFERENCES articles(article_id) ON DELETE CASCADE,
+  user_id INT REFERENCES users(user_id) ON DELETE CASCADE,
+  content TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+

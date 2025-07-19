@@ -4,6 +4,7 @@ const path = require('path');
 const { Pool } = require('pg');
 const bcrypt = require('bcrypt');
 const session = require('express-session');
+const multer = require('multer');
 
 const app = express();
 
@@ -15,6 +16,18 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
 }));
+
+// --- MULTER SETUP ---
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/'); // Make sure this folder exists
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
+  }
+});
+const upload = multer({ storage: storage });
 
 // --- VIEW ENGINE SETUP ---
 app.engine('hbs', exphbs.engine({
@@ -28,6 +41,7 @@ app.set('views', path.join(__dirname, 'views'));
 
 // --- STATIC FILES ---
 app.use(express.static(path.join(__dirname, 'resources')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); // serve uploaded files
 
 // --- DATABASE ---
 const pool = new Pool({
@@ -48,6 +62,7 @@ app.get("/home", async (req, res) => {
         articles.article_id,
         articles.title,
         articles.summary,
+        articles.file_path,
         articles.created_at,
         users.username AS author_username
       FROM articles
@@ -62,6 +77,7 @@ app.get("/home", async (req, res) => {
       article_id: row.article_id,
       title: row.title,
       summary: row.summary,
+      file_path: row.file_path,
       date: row.created_at ? new Date(row.created_at).toLocaleDateString() : '',
       author: row.author_username
     }));
@@ -79,7 +95,6 @@ app.get("/home", async (req, res) => {
     });
   }
 });
-
 
 app.get("/", (req, res) => {
   res.redirect("/login");
@@ -177,39 +192,39 @@ app.get('/profile', (req, res) => {
   res.render('pages/profile', { title: "Profile", user: req.session.user });
 });
 
-// Adding New Article
+// SHOW NEW ARTICLE FORM
 app.get('/new_article', (req, res) => {
-  res.render('pages/new_article');
+  if (!req.session.user) return res.redirect('/login');
+  res.render('pages/new_article', { user: req.session.user });
 });
 
-app.post('/new_article', async (req, res) => {
+// HANDLE NEW ARTICLE WITH FILE UPLOAD
+app.post('/new_article', upload.single('article_file'), async (req, res) => {
   const { title, summary } = req.body;
   const user_id = req.session.user?.id;
+  const filePath = req.file ? req.file.path : null;
 
-  console.log('New article submission:', { title, summary, user_id });
+  console.log('New article submission:', { title, summary, user_id, filePath });
 
-  if (!user_id) {
-    return res.redirect('/login');
-  }
+  if (!user_id) return res.redirect('/login');
 
   try {
-    const results = await pool.query(`
-      INSERT INTO articles (title, summary)
-      VALUES ($1, $2)
+    const result = await pool.query(`
+      INSERT INTO articles (title, summary, file_path)
+      VALUES ($1, $2, $3)
       RETURNING article_id
-      `, [title, summary]);
+    `, [title, summary, filePath]);
 
-    const article_id = results.rows[0].article_id;
+    const article_id = result.rows[0].article_id;
 
     await pool.query(`
       INSERT INTO articles_to_users (user_id, article_id)
       VALUES ($1, $2)
-      `, [user_id, article_id]);
+    `, [user_id, article_id]);
 
     res.redirect('/home');
-  }
-  catch (error) {
-    console.error('Error inserting article:', error);
+  } catch (error) {
+    console.error('Error inserting article with file:', error);
     res.status(500).send('Server Error');
   }
 });

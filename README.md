@@ -2,11 +2,11 @@
 
 ---
 
-# 📰 News Website Project: Stay Informed, Stay Engaged 📰
+# News Website Project: Stay Informed, Stay Engaged 
 
-## 🌟 Your Personalized Hub for News and Updates 🌟
+## Your Personalized Hub for News and Updates 
 
-The **News Website Project** offers a modern, user-centric platform designed to make staying informed easy and engaging. Users can create secure accounts, personalize their experience, and access curated news content all in one place.
+The **News Website Project** offers a modern platform designed to make staying informed easy and engaging. Users can create secure accounts, personalize their experience, and access curated news content all in one place.
 
 Features include:
 
@@ -15,9 +15,7 @@ Features include:
 * **Interactive Experience:** Like articles, post messages, and engage with the community.
 * **Secure Authentication:** Passwords are securely hashed to protect user data.
 * **Scalable Infrastructure:** The entire project is containerized with Docker for easy deployment and scalability.
-* **AI or Real News Integration:** Depending on implementation, articles may be AI-generated or fetched from real news APIs.
 
-This project delivers an interactive, secure, and scalable solution for accessing news and building a personalized information space.
 
 ---
 

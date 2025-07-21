@@ -1,10 +1,8 @@
 # CSCI_3308_Project
 
----
+# News Website Project: Stay Informed, Stay Engaged 
 
-# 📰 News Website Project: Stay Informed, Stay Engaged 📰
-
-## 🌟 Your Personalized Hub for News and Updates 🌟
+##  Your Personalized Hub for News and Updates 
 
 The **News Website Project** offers a modern, user-centric platform designed to make staying informed easy and engaging. Users can create secure accounts, personalize their experience, and access curated news content all in one place.
 
@@ -15,11 +13,6 @@ Features include:
 * **Interactive Experience:** Like articles, post messages, and engage with the community.
 * **Secure Authentication:** Passwords are securely hashed to protect user data.
 * **Scalable Infrastructure:** The entire project is containerized with Docker for easy deployment and scalability.
-* **AI or Real News Integration:** Depending on implementation, articles may be AI-generated or fetched from real news APIs.
-
-This project delivers an interactive, secure, and scalable solution for accessing news and building a personalized information space.
-
----
 
 ##  Team Members
 
@@ -28,8 +21,6 @@ This project delivers an interactive, secure, and scalable solution for accessin
 > * Basnet, Sujay – [sujay.basnet@colorado.edu](mailto:sujay.basnet@colorado.edu)
 > * Pathak, Shivam – [shivam.pathak-1@colorado.edu](mailto:shivam.pathak-1@colorado.edu)
 
----
-
 ##  Technology Stack
 
 > * **Frontend:** HTML, CSS, JavaScript
@@ -37,15 +28,11 @@ This project delivers an interactive, secure, and scalable solution for accessin
 > * **Database:** PostgreSQL
 > * **Containerization:** Docker, Docker Compose
 
----
-
 ## Prerequisites to Run the App
 
 > * Docker and Docker Compose
 > * Node.js and npm (for manual development use)
 > * PostgreSQL (optional, handled by Docker in standard setup)
-
----
 
 ##  Instructions to Run Locally
 
@@ -89,8 +76,6 @@ This project delivers an interactive, secure, and scalable solution for accessin
 
 The application backend and database will start together in containers.
 
----
-
 ##  Testing
 
 > Tests can be run using:
@@ -101,7 +86,6 @@ The application backend and database will start together in containers.
 >
 > Automated tests may also run on container startup, depending on configuration.
 
----
 
 ##  Future Improvements
 
@@ -109,9 +93,5 @@ The application backend and database will start together in containers.
 * Enhanced personalization and filtering features
 * Community messaging and expanded engagement tools
 
----
 
-**Stay informed with a platform built for you!**
-
----
 

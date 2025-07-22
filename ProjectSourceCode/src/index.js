@@ -51,7 +51,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); // serve u
 
 // --- DATABASE ---
 const pool = new Pool({
-  host: process.env.DB_HOST || 'db',
+  host: process.env.DB_HOST,
   port: process.env.DB_PORT || 5432,
   user: process.env.POSTGRES_USER || 'myuser',
   password: process.env.POSTGRES_PASSWORD || 'mypassword',

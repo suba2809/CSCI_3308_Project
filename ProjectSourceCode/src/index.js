@@ -51,13 +51,12 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); // serve u
 
 // --- DATABASE ---
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false
-  }
+  host: process.env.DB_HOST || 'db',
+  port: process.env.DB_PORT || 5432,
+  user: process.env.POSTGRES_USER || 'myuser',
+  password: process.env.POSTGRES_PASSWORD || 'mypassword',
+  database: process.env.POSTGRES_DB || 'mydatabase',
 });
-
-
 
 // --- ROUTES ---
 

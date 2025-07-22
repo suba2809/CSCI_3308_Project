@@ -18,13 +18,13 @@ services:
     working_dir: /repository/src
     env_file: .env
     environment:
-      - NODE_ENV=production
+      NODE_ENV: production
     depends_on:
       - db
     ports:
       - '3000:3000'
     volumes:
-      - ./:/repository
+      - ./src:/repository/src
       - ./uploads:/repository/src/uploads
     command: sh -c "npm install && npm run testandrun"
 

@@ -1,5 +1,12 @@
 -- Connect to the database
 -- \c users_db;
+-- DROP and recreate the users table to fix missing columns
+DROP TABLE IF EXISTS comments;
+DROP TABLE IF EXISTS likes;
+DROP TABLE IF EXISTS articles_to_users;
+DROP TABLE IF EXISTS articles;
+DROP TABLE IF EXISTS users;
+
 
 -- ============ 
 -- USERS 

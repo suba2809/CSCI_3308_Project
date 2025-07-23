@@ -1,0 +1,25 @@
+1. User Registration
+Test Case: Register with valid username/password
+Test Data: username: 'JohnDoe', password: 'DoeJohn'
+Test Env: Localhost
+Expected Result: Status 200 and success message
+Tester: Sujay
+Observation: Works as expected ✅
+
+
+2.Login
+Test Case: Login correct credentials
+Test Data: Valid user credentials
+Test Env: Localhost
+Expected Result: 200 OK for valid
+Tester: Sujay
+Observation: Works as expected ✅
+
+
+3.Profile Access
+Test Case: View profile after login
+Test Data: Use testuser after login
+Expected Result: Should return JSON with username
+Test Env: Localhost
+Tester: Sujay
+Observation: Works as expected ✅

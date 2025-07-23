@@ -1,16 +1,40 @@
 body {
-  background-color: #f3f3f3;
-  font-family: 'Segoe UI', sans-serif;
+  background-color: #f8f8f8;
+  font-family: 'Georgia', serif;
+  color: #1a1a1a;
   margin: 0;
   padding: 0;
 }
 
-h2 {
-  color: #333;
+h1, h2, h3 {
+  font-family: 'Times New Roman', serif;
+  color: #111;
 }
 
-textarea {
-  resize: vertical;
-  border: 1px solid #aaa;
-  border-radius: 4px;
+a {
+  color: #aa0000; /* Accent color */
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: white;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+  border: 1px solid #ccc;
+}
+
+textarea, input, button {
+  font-family: inherit;
+}
+
+/* Make sure header text stays white */
+header h1,
+header p {
+  color: white;
 }

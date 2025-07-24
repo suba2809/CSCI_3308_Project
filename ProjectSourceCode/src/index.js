@@ -260,6 +260,53 @@ app.post('/new_article', upload.single('article_file'), async (req, res) => {
 app.get('/logout', (req, res) => {
   req.session.destroy(() => res.redirect('/login'));
 });
+// Edit Article (GET)
+app.get('/edit_article/:id', async (req, res) => {
+  const articleId = req.params.id;
+
+  try {
+    const result = await pool.query(
+      'SELECT * FROM articles WHERE article_id = $1',
+      [articleId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).send('Article not found');
+    }
+
+    const article = result.rows[0];
+    res.render('pages/edit_article', { title: "Edit Article", article, user: req.session.user });
+  } catch (err) {
+    console.error('Error fetching article:', err);
+    res.status(500).send('Server error');
+  }
+});
+
+// Edit Article (POST)
+app.post('/edit_article/:id', upload.single('article_file'), async (req, res) => {
+  const articleId = req.params.id;
+  const { title, summary } = req.body;
+  const filePath = req.file ? req.file.path : null;
+
+  try {
+    if (filePath) {
+      await pool.query(
+        'UPDATE articles SET title = $1, summary = $2, file_path = $3 WHERE article_id = $4',
+        [title, summary, filePath, articleId]
+      );
+    } else {
+      await pool.query(
+        'UPDATE articles SET title = $1, summary = $2 WHERE article_id = $3',
+        [title, summary, articleId]
+      );
+    }
+
+    res.redirect('/home');
+  } catch (err) {
+    console.error('Error updating article:', err);
+    res.status(500).send('Server error');
+  }
+});
 
 // --- START SERVER ---
 const PORT = process.env.PORT || 3000;

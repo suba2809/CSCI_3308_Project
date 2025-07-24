@@ -1,8 +1,6 @@
 # CSCI_3308_Project
 
-# News Website Project: Stay Informed, Stay Engaged 
 
-<<<<<<< HEAD
 # News Website Project: Stay Informed, Stay Engaged 
 
 ## Your Personalized Hub for News and Updates 

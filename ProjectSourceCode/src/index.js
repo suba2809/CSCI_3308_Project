@@ -35,14 +35,22 @@ app.use(session({
 }));
 
 // --- VIEW ENGINE ---
-app.engine('hbs', exphbs.engine({
+const hbs = exphbs.create({
   extname: '.hbs',
   defaultLayout: 'main',
   layoutsDir: path.join(__dirname, 'views/layouts'),
   partialsDir: path.join(__dirname, 'views/partials'),
-}));
+  helpers: {
+    ifCond: function (v1, v2, options) {
+      return v1 === v2 ? options.fn(this) : options.inverse(this);
+    }
+  }
+});
+
+app.engine('hbs', hbs.engine);
 app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'views'));
+
 
 // --- STATIC FILES ---
 app.use(express.static(path.join(__dirname, 'resources')));

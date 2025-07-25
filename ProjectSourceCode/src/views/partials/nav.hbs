@@ -1,13 +1,15 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <div class="container-fluid">
     <a class="navbar-brand" href="/home">TinyNews</a>
+
+    <!-- Dynamic Navigation Bar -->
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
-        {{#if user}}
+        {{#if user}} <!-- If logged in -->
           <li class="nav-item"><a class="nav-link" href="/profile">Profile</a></li>
           <li class="nav-item"><a class="nav-link" href="/new_article">New Article</a></li>
           <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
-        {{else}}
+        {{else}} <!-- If not Logged In -->
           <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
           <li class="nav-item"><a class="nav-link" href="/register">Register</a></li>
         {{/if}}

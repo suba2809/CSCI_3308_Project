@@ -1,5 +1,6 @@
 <div style="max-width: 600px; margin: 50px auto; padding: 30px; background-color: white; border-radius: 10px; font-family: sans-serif;">
   <h2 style="color: #0f0f0f;">Welcome, {{user.first_name}} {{user.last_name}}!</h2>
+  <!-- Add New Article Button -->
   <div style="display: flex; justify-content: flex-end; margin-top: 1rem;">
     <a href="/new_article" 
        style="
@@ -15,6 +16,7 @@
       Add New Article
     </a>
   </div>
+  <!-- User Info -->
   <p><strong>Username:</strong> {{user.username}}</p>
   <p><strong>Email:</strong> {{user.email}}</p>
   <p><strong>Bio:</strong> {{#if user.bio}}{{user.bio}}{{else}}N/A{{/if}}</p>

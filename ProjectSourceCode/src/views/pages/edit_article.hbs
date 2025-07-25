@@ -1,6 +1,8 @@
 {{!-- views/pages/edit_article.hbs --}}
 <div style="max-width: 600px; margin: 50px auto; padding: 30px; background-color: white; border-radius: 10px">
   <h2 style="text-align: center; color: #e4e2e0;">Edit Article</h2>
+
+  <!-- Edit Article Form -->
   <form action="/edit_article/{{article.article_id}}" method="POST" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 16px;">
     <div>
       <label for="title">Title</label>
@@ -25,9 +27,12 @@
   </form>
 </div>
 
+<!-- Error Message -->
 {{#if error}}
   <p style="color: red; text-align: center; margin-top: 10px;">{{error}}</p>
 {{/if}}
+
+<!-- Success Message -->
 {{#if success}}
   <p style="color: green; text-align: center; margin-top: 10px;">{{success}}</p>
 {{/if}}

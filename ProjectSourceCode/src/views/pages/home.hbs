@@ -4,8 +4,10 @@
 
   <hr />
 
+<!-- Create a Table for the articles -->
 {{#each articles}}
   <div style="background: #e4e2e0; padding: 1rem; margin-bottom: 1.5rem; border-radius: 10px; box-shadow: 0 0 5px rgba(0,0,0,0.1);">
+    <!-- Article Info -->
     <h3><a href="/article/{{article_id}}" style="color: #0f0f0f; text-decoration: none;">{{title}}</a></h3>
     <p><strong>By:</strong> {{author}} • {{date}}</p>
     <p>{{summary}}</p>
@@ -15,7 +17,7 @@
   </div>
 {{/each}}
 
-
+  <!-- If no article exists -->
   {{#unless articles.length}}
     <p>No articles found.</p>
   {{/unless}}

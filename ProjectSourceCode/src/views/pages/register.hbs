@@ -1,6 +1,7 @@
 <div style="max-width: 500px; margin: 50px auto; padding: 30px; background-color: white; border-radius: 10px; font-family: sans-serif; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
   <h2 style="text-align: center; color: #0f0f0f;">Register</h2>
 
+  <!-- Registration Form -->
   <form action="/register" method="POST" style="display: flex; flex-direction: column; gap: 12px;">
     <input type="text" name="first_name" placeholder="First Name" required>
     <input type="text" name="last_name" placeholder="Last Name" required>
@@ -16,9 +17,12 @@
 
   </form>
 
+  <!-- Error Message -->
   {{#if error}}
     <p style="color: red; text-align: center; margin-top: 10px;">{{error}}</p>
   {{/if}}
+  
+  <!-- Success Message -->
   {{#if success}}
     <p style="color: green; text-align: center; margin-top: 10px;">{{success}}</p>
   {{/if}}

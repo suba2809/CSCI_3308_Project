@@ -87,6 +87,7 @@ app.get("/home", async (req, res) => {
       ORDER BY articles.created_at DESC
     `);
 
+    // Paramaterize variables
     const articles = results.rows.map(row => ({
       article_id: row.article_id,
       title: row.title,
@@ -110,22 +111,25 @@ app.get("/home", async (req, res) => {
   }
 });
 
-
-
+// Takes to Login on Startup
 app.get("/", (req, res) => {
   res.redirect("/login");
 });
+
+
 // Registration
 app.get("/register", (req, res) => {
   res.render("pages/register", { title: "Register" });
 });
 app.post('/register', async (req, res) => {
   const { first_name, last_name, email, bio, username, password } = req.body;
+  // Require all fields be filled
   if (!first_name || !last_name || !email || !username || !password) {
     return res.render('pages/register', { title: "Register", error: 'All fields are required.' });
   }
 
   try {
+    // Insert info into the tables
     const existing = await pool.query(
       'SELECT * FROM users WHERE email = $1 OR username = $2',
       [email, username]
@@ -143,12 +147,15 @@ app.post('/register', async (req, res) => {
        VALUES ($1, $2, $3, $4, $5, $6)`,
       [first_name, last_name, email, bio, username, hashedPassword]
     );
+    // Success
     res.redirect("/login");
   } catch (err) {
+    // Fail
     console.error('Registration error:', err);
     res.render('pages/register', { title: "Register", error: 'Something went wrong.' });
   }
 });
+// Registration for Unit Testing
 app.post('/api/register', async (req, res) => {
   const { first_name, last_name, email, username, password } = req.body;
   if (!first_name || !last_name || !email || !username || !password) {
@@ -160,8 +167,10 @@ app.post('/api/register', async (req, res) => {
       'INSERT INTO users (first_name, last_name, email, username, password) VALUES ($1, $2, $3, $4, $5)',
       [first_name, last_name, email, username, hash]
     );
+    // Success
     res.status(201).json({ message: 'Success' });
   } catch (err) {
+    // Fail
     console.error(err);
     res.status(500).json({ error: 'User registration failed' });
   }
@@ -177,14 +186,17 @@ app.post('/login', async (req, res) => {
   const { username, password } = req.body;
   try {
     const result = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
+    // No username exists
     if (result.rows.length === 0) {
       return res.render('pages/login', { title: "Login", error: 'Invalid username or password.' });
     }
     const user = result.rows[0];
     const match = await bcrypt.compare(password, user.password);
+    // Password does not match
     if (!match) {
       return res.render('pages/login', { title: "Login", error: 'Invalid username or password.' });
     }
+    // Set session info
     req.session.user = {
       id: user.user_id,
       username: user.username,
@@ -195,20 +207,26 @@ app.post('/login', async (req, res) => {
       profile_photo: user.profile_photo,
       created_at: user.created_at,
     };
+    // Success
     res.redirect('/profile');
   } catch (err) {
+    // Fail
     console.error('Login error:', err);
     res.render('pages/login', { title: "Login", error: 'An error occurred.' });
   }
 });
+// Login used for Unit Testing
 app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
   try {
     const result = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
+
+    // If no Username exists
     if (result.rows.length === 0) return res.status(401).json({ error: 'Invalid username or password.' });
 
     const user = result.rows[0];
     const match = await bcrypt.compare(password, user.password);
+    // If Wrong Password
     if (!match) return res.status(401).json({ error: 'Invalid username or password.' });
 
     req.session.user = {
@@ -221,8 +239,10 @@ app.post('/api/login', async (req, res) => {
       profile_photo: user.profile_photo,
       created_at: user.created_at,
     };
+    // Success
     res.status(200).json({ message: 'Login successful' });
   } catch (err) {
+    // Fail
     console.error('API login error:', err);
     res.status(500).json({ error: 'An error occurred.' });
   }
@@ -235,6 +255,7 @@ app.get('/profile', (req, res) => {
   }
   res.render('pages/profile', { title: "Profile", user: req.session.user });
 });
+// Profile for Unit Testing
 app.get('/api/profile', (req, res) => {
   if (!req.session.user) return res.status(401).send('Not authenticated');
   res.status(200).json({ username: req.session.user.username });
@@ -254,9 +275,11 @@ app.post('/new_article', upload.single('article_file'), async (req, res) => {
 
   console.log('New article submission:', { title, summary, user_id, filePath });
 
+  // Need to be logged in to add article
   if (!user_id) return res.redirect('/login');
 
   try {
+    // Insert into tables
     const result = await pool.query(`
       INSERT INTO articles (title, summary, file_path)
       VALUES ($1, $2, $3)

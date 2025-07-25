@@ -2,11 +2,12 @@
   <img src="/images/TinyNews.png" alt="TinyNews Logo" style="width: 100%; max-width: 300px; display: block; margin: 0 auto 20px auto;">
 
 
-
+  <!-- Success Message -->
   {{#if message}}
     <p style="color: green; text-align: center;">{{message}}</p>
   {{/if}}
   
+  <!-- Login Form -->
   <h2 style="text-align: center; color: #0f0f0f;">Login</h2>
   <form action="/login" method="POST" style="display: flex; flex-direction: column; gap: 12px;">
     <input type="text" name="username" placeholder="Username" required>
@@ -14,6 +15,7 @@
     <button type="submit" style="background-color: #0f0f0f; color: white; padding: 10px; border: none; border-radius: 5px;">Login</button>
   </form>
 
+  <!-- Error Message -->
   {{#if error}}
     <p style="color: red; text-align: center; margin-top: 10px;">{{error}}</p>
   {{/if}}

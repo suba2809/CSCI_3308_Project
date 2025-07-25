@@ -1,6 +1,8 @@
 <div style="max-width: 400px; margin: 50px auto; padding: 30px; background-color: #e4e2e0; border-radius: 10px; font-family: sans-serif;">
   <h2>Post a New Article</h2>
   <form action="/new_article" method="POST" enctype="multipart/form-data">
+
+    <!-- Add Article Form -->
     <div class="mb-3">
       <label class="form-label">Title</label>
       <input type="text" name="title" class="form-control" required />
@@ -16,6 +18,7 @@
     <button class="btn btn-primary" type="submit">Post</button>
   </form>
 
+  <!-- Error Message -->
   {{#if error}}
     <p style="color: red; text-align: center; margin-top: 10px;">{{error}}</p>
   {{/if}}
